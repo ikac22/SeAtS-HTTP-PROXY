@@ -1,0 +1,3 @@
+[submodule "SeAtS"]
+	path = SeAtS
+	url = https://github.com/ikac22/SeAtS.git
