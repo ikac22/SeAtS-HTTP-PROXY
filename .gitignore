@@ -2,3 +2,8 @@ bin/**/*
 build/**/*
 bin/*
 build/*
+demo/**/node_modules/*
+demo/**/node_modules/**/*
+demo/**/package-lock.json
+demo/**/log/*
+demo/**/log/**
