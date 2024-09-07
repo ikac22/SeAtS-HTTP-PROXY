@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <cstdlib>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -140,15 +141,14 @@ void writeToclientSocket(const char* buff_to_server,int sockfd,int buff_length)
 
 }
 
-
-
 void writeToClient (int Clientfd, seats::seats_client_socket* cs) {
 	int MAX_BUF_SIZE = 5000;
 
 	int iRecv;
 	char buf[MAX_BUF_SIZE];
+    bool end = false;
 
-	while ((iRecv = cs->recv(buf, MAX_BUF_SIZE)) > 0) {
+	while (!end && ((iRecv = cs->recv(buf, MAX_BUF_SIZE)) > 0)) {
 	    writeToclientSocket(buf, Clientfd, iRecv);         // writing to client	    
 		memset(buf,0,sizeof buf);	
 	}      
@@ -161,7 +161,7 @@ void writeToClient (int Clientfd, seats::seats_client_socket* cs) {
 }
 
 
-void datafromclient(void* sockid, seats::seats_client_socket* cs)
+void datafromclient(void* sockid, char* host, int port)
 {	
 	int MAX_BUFFER_SIZE = 5000;
 
@@ -215,51 +215,36 @@ void datafromclient(void* sockid, seats::seats_client_socket* cs)
 
 	}
 
-	struct ParsedRequest *req;    // contains parsed request
-
-	req = ParsedRequest_create();
-
-	if (ParsedRequest_parse(req, request_message, strlen(request_message)) < 0) {		
-		fprintf (stderr,"Error in request message..only http and get with headers are allowed ! \n");
-		exit(0);
-	}
-
-	if (req->port == NULL)             // if port is not mentioned in URL, we take default as 80 
-		 req->port = (char *) "80";
-	
-
-	/*final request to be sent*/
-	
-	char*  browser_req  = convert_Request_to_string(req);		
+    seats::seats_client_socket* cs = new seats::seats_client_socket();
+    printf("Connecting to server...\n");
+    if(cs->connect(host, port)){
+        printf("Failed to connect to server.");
+        exit(1);
+    }
+    else{
+        printf("Successfully established secure attested tunnel.\n");
+    } 
 		
-	writeToserverSocket(browser_req, cs, total_recieved_bits);
+	writeToserverSocket(request_message, cs, total_recieved_bits);
 	writeToClient(newsockfd, cs);
 
-	ParsedRequest_destroy(req);
+    delete cs; 
 }
 
 int main (int argc, char *argv[]) 
-{
-
-    
+{ 
 	int sockfd,newsockfd;
 
 	struct sockaddr_in serv_addr; 
 	struct sockaddr cli_addr;
 
+    setbuf(stdout, NULL);
 	if (argc<4) 
   	{
   		fprintf (stderr,"SORRY! Provide A Port ! \n");
   		return 1;
   	}
-
-    seats::seats_client_socket* cs = new seats::seats_client_socket();
-
-    if(cs->connect(argv[3], atoi(argv[4]))){
-        printf("Failed to connect to server.");
-        return 1;
-    }
-    
+ 
   	sockfd = socket(AF_INET, SOCK_STREAM, 0);   // create a socket
 
   	if (sockfd<0) {
@@ -291,14 +276,30 @@ int main (int argc, char *argv[])
   		
   		/* A browser request starts here */
 
+        printf("Waiting for connection from browser.\n");
+
   		newsockfd = accept(sockfd,&cli_addr, (socklen_t*) &clilen); 
+
+        printf("Accepted connection from browser.\n");
 
   		if (newsockfd <0){
   			fprintf(stderr, "ERROR! On Accepting Request ! i.e requests limit crossed \n");
  		}
 
+        printf("Waiting request data.\n");
 
- 		datafromclient((void*)&newsockfd, cs);
+        int pid = fork();
+
+ 		if(pid == 0){
+
+ 			datafromclient((void*)&newsockfd, argv[2], atoi(argv[3]));
+ 			close(newsockfd);
+ 			_exit(0);
+ 		}else{
+ 			close(newsockfd);     // pid =1 parent process
+ 		}
+
+        printf("Request data sent.\n");
  		
         close(newsockfd);
 

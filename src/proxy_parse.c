@@ -437,7 +437,7 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 
      parse->protocol = strtok_r(full_addr, "://", &saveptr);
      if (parse->protocol == NULL) {
-	  debug( "invalid request line, missing host\n");
+	  debug( "1 invalid request line, missing host\n");
 	  free(tmp_buf);
 	  free(parse->buf);
 	  parse->buf = NULL;
@@ -449,7 +449,7 @@ ParsedRequest_parse(struct ParsedRequest * parse, const char *buf,
 
      parse->host = strtok_r(NULL, "/", &saveptr);
      if (parse->host == NULL) {
-	  debug( "invalid request line, missing host\n");
+	  debug( "2 invalid request line, missing host\n");
 	  free(tmp_buf);
 	  free(parse->buf);
 	  parse->buf = NULL;

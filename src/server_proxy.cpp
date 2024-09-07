@@ -122,10 +122,6 @@ void writeToserverSocket(const char* buff_to_server,int sockfd,int buff_length)
 void writeToclientSocket(const char* buff_to_server,seats::seats_socket* sockfd,int buff_length)
 {
 
-	string temp;
-
-	temp.append(buff_to_server);
-
 	int totalsent = 0;
 
 	int senteach;
@@ -146,10 +142,9 @@ void writeToClient (seats::seats_socket* Clientfd, int Serverfd) {
 	char buf[MAX_BUF_SIZE];
 
 	while ((iRecv = recv(Serverfd, buf, MAX_BUF_SIZE, 0)) > 0) {
-	      writeToclientSocket(buf, Clientfd,iRecv);         // writing to client	    
+	    writeToclientSocket(buf, Clientfd,iRecv);         // writing to client	    
 		memset(buf,0,sizeof buf);	
 	}      
-
 
 	/* Error handling */
 	if (iRecv < 0) {
@@ -206,28 +201,31 @@ void datafromclient(seats::seats_socket* cs, char* host, char* port)
 	  strcat(request_message, buf);
 
 	}
+    printf("Received:\n%s\n", request_message);
 
-	struct ParsedRequest *req;    // contains parsed request
-
-	req = ParsedRequest_create();
-
-	if (ParsedRequest_parse(req, request_message, strlen(request_message)) < 0) {		
-		fprintf (stderr,"Error in request message..only http and get with headers are allowed ! \n");
-		exit(0);
-	}
-
-	/*final request to be sent*/
-	
-	char*  browser_req  = convert_Request_to_string(req);		
+	// struct ParsedRequest *req;    // contains parsed request
+	//
+	// req = ParsedRequest_create();
+	//
+	// if (ParsedRequest_parse(req, request_message, strlen(request_message)) < 0) {		
+	// 	fprintf (stderr,"Error in request message..only http and get with headers are allowed ! \n");
+	// 	exit(0);
+	// }
+	//
+	// /*final request to be sent*/
+	// 
+	// char*  browser_req  = convert_Request_to_string(req);		
 		
 	int iServerfd;
 
 	iServerfd = createserverSocket(host, port);
 
-	writeToserverSocket(browser_req, iServerfd, total_recieved_bits);
+	writeToserverSocket(request_message, iServerfd, total_recieved_bits);
+    printf("Getting response from server and sending to clinet.\n");
 	writeToClient(cs, iServerfd);
+    printf("Sent response to client\n");
 
-	ParsedRequest_destroy(req);
+	// ParsedRequest_destroy(req);
 		
 	close(iServerfd);
 
@@ -243,6 +241,8 @@ int main (int argc, char *argv[])
   	}
 
 
+    setbuf(stdout, NULL);
+
   	int  portno = atoi(argv[1]);           // argument through terminal 
     char* host = argv[2];
     char* srv_port = argv[3];
@@ -253,17 +253,34 @@ int main (int argc, char *argv[])
   	while(1) {
   		
   		/* A browser request starts here */
-        cs = ss.accept();
 
+        cs = ss.accept();
   		if (!cs){
   			fprintf(stderr, "ERROR! On Accepting Request ! i.e requests limit crossed \n");
             return 1;
  		}
-
- 		datafromclient(cs, host, srv_port);
-        delete cs;
+        
+        
+        int pid = fork();
+ 
+ 		if(pid == 0){
+            if(cs->accept()){
+                printf("Failed to establish secure attested tunnel.\n");
+                return 1;
+            }
+            else{
+                printf("Successfully established secure attested tunnel.\n");
+            }
+ 		    datafromclient(cs, host, srv_port);
+            delete cs;
+ 			_exit(0);
+ 		}else{
+            delete cs;
+ 		}
 
  	}
+
+    cs->close();
 
 	return 0;
 }
