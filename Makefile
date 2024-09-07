@@ -27,4 +27,5 @@ server: lib $(SRCDIR)/server_proxy.cpp
 	@ $(CXX) -o $(BINDIR)/server_proxy $(OBJDIR)/proxy_parse.o $(OBJDIR)/server_proxy.o $(LDFLAGS) 
 	
 clean:
+	@ $(MAKE) -C SeAtS clean
 	@rm -rf $(BINDIR) $(OBJDIR)

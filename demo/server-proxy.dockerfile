@@ -9,4 +9,4 @@ RUN apt-get update \
 
 COPY bin/server_proxy
 
-ENTRYPOINT ["./client_proxy"]
+ENTRYPOINT ["./server_proxy"]

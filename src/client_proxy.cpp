@@ -207,8 +207,6 @@ void datafromclient(void* sockid, char* host, int port)
 				exit (1);
 			}
 		}
-
-
 	  }
 
 	  strcat(request_message, buf);
@@ -219,7 +217,7 @@ void datafromclient(void* sockid, char* host, int port)
     printf("Connecting to server...\n");
     if(cs->connect(host, port)){
         printf("Failed to connect to server.");
-        exit(1);
+        return;
     }
     else{
         printf("Successfully established secure attested tunnel.\n");
@@ -228,6 +226,7 @@ void datafromclient(void* sockid, char* host, int port)
 	writeToserverSocket(request_message, cs, total_recieved_bits);
 	writeToClient(newsockfd, cs);
 
+    free(request_message);
     delete cs; 
 }
 
