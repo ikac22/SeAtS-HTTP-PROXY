@@ -249,6 +249,17 @@ int main (int argc, char *argv[])
 
     seats::seats_server_socket ss(portno); 
     seats::seats_socket* cs;
+        
+    cs = ss.accept();
+  	if (!cs){
+  	    fprintf(stderr, "ERROR: Failed on initial TCP connection with client. \n");
+        return 1;
+ 	}
+    if(cs->accept()){
+  	    fprintf(stderr, "ERROR: Failed on initial TLS connection with client. \n");
+        return 1; 
+    }
+    delete cs;
 
   	while(1) {
   		
