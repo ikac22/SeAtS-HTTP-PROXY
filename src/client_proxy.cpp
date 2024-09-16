@@ -270,14 +270,14 @@ int main (int argc, char *argv[])
 
   	int clilen = sizeof(struct sockaddr);
 
-    seats::seats_client_socket* cs = new seats::seats_client_socket();
-    if(cs->connect(argv[2], atoi(argv[3]))){
-        printf("Failed initial connect to server.");
-        return 1;
-    }
-    cs->send("Hello", 6);
-
-    delete cs; 
+    // seats::seats_client_socket* cs = new seats::seats_client_socket();
+    // if(cs->connect(argv[2], atoi(argv[3]))){
+    //     printf("Failed initial connect to server.");
+    //     return 1;
+    // }
+    // cs->send("Hello", 6);
+    //
+    // delete cs; 
 
   	while(1) {
   		

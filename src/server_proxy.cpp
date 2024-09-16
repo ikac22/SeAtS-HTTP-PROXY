@@ -250,18 +250,18 @@ int main (int argc, char *argv[])
     seats::seats_server_socket ss(portno); 
     seats::seats_socket* cs;
         
-    cs = ss.accept();
-  	if (!cs){
-  	    fprintf(stderr, "ERROR: Failed on initial TCP connection with client. \n");
-        return 1;
- 	}
-    if(cs->accept()){
-  	    fprintf(stderr, "ERROR: Failed on initial TLS connection with client. \n");
-        return 1; 
-    }
-    char a[10];
-    cs->recv(a, 6);
-    cs->close();
+  //   cs = ss.accept();
+  // 	if (!cs){
+  // 	    fprintf(stderr, "ERROR: Failed on initial TCP connection with client. \n");
+  //       return 1;
+ 	// }
+  //   if(cs->accept()){
+  // 	    fprintf(stderr, "ERROR: Failed on initial TLS connection with client. \n");
+  //       return 1; 
+  //   }
+  //   char a[10];
+  //   cs->recv(a, 6);
+  //   cs->close();
 
   	while(1) {
   		
