@@ -264,6 +264,7 @@ int main (int argc, char *argv[])
   	while(1) {
   		
   		/* A browser request starts here */
+  	    fprintf(stdin, "Waiting connection from client proxy... \n");
 
         cs = ss.accept();
   		if (!cs){
