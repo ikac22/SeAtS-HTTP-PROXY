@@ -261,6 +261,7 @@ int main (int argc, char *argv[])
     }
     char a[10];
     cs->recv(a, 6);
+    cs->close();
 
   	while(1) {
   		
