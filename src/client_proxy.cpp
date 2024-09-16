@@ -275,6 +275,7 @@ int main (int argc, char *argv[])
         printf("Failed initial connect to server.");
         return 1;
     }
+    cs->send("Hello", 6);
 
     delete cs; 
 
