@@ -268,12 +268,14 @@ int main (int argc, char *argv[])
   	    fprintf(stdout, "Waiting connection from client proxy... \n");
 
         cs = ss.accept();
+        printf("Accepted client TCP conenctions...\n");
   		if (!cs){
   			fprintf(stderr, "ERROR! On Accepting Request ! i.e requests limit crossed \n");
             return 1;
  		}
         
         
+        printf("Forking...\n");
         int pid = fork();
  
  		if(pid == 0){
